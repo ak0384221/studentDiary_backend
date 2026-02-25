@@ -13,16 +13,17 @@ const getHomeworkById = asyncHandler(async (req, res) => {
   if (!id || id == "") {
     throw new Error("id is required");
   }
-  const result = await db
-    .select()
-    .from(homeworks)
-    .where(eq(homeworks.studentId, id));
+  const result = await db.select().from(homeworks).where(eq(homeworks.id, id));
 
   res.status(200).json(result);
 });
 
 const updateHomework = asyncHandler(async (req, res) => {
   const { studentId, homeworkId } = req.params;
+  const { completed } = req.query;
+  const statusValue = completed ? "Completed" : "Missed";
+  console.log("q", completed);
+  console.log("statusvalue", statusValue);
 
   if ([studentId, homeworkId].some((key) => !key || key == "")) {
     throw new Error("student id,homework id is required");
@@ -31,12 +32,20 @@ const updateHomework = asyncHandler(async (req, res) => {
   const result = await db
     .update(homeworks)
     .set({
-      status: "Succeed",
+      status: statusValue,
     })
     .where(
       and(eq(homeworks.studentId, studentId), eq(homeworks.id, homeworkId)),
     )
     .returning();
+  res.status(200).json(result);
+});
+const getHomeworksbyStudentId = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+  const result = await db
+    .select()
+    .from(homeworks)
+    .where(eq(homeworks.studentId, studentId));
   res.status(200).json(result);
 });
 
@@ -57,4 +66,10 @@ const createHomeworks = asyncHandler(async (req, res) => {
   res.status(200).json(created);
 });
 
-export { getHomeworks, getHomeworkById, updateHomework, createHomeworks };
+export {
+  getHomeworks,
+  getHomeworkById,
+  updateHomework,
+  createHomeworks,
+  getHomeworksbyStudentId,
+};

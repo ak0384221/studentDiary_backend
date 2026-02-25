@@ -7,4 +7,5 @@ import {
 const homeworkRouter: Router = Router();
 homeworkRouter.route("/:id").get(getHomeworkById);
 homeworkRouter.route("/:studentId/:homeworkId").patch(updateHomework);
+
 export { homeworkRouter };

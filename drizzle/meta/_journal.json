@@ -22,6 +22,13 @@
       "when": 1771997900919,
       "tag": "0002_breezy_proteus",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1772012298283,
+      "tag": "0003_medical_sunfire",
+      "breakpoints": true
     }
   ]
 }
