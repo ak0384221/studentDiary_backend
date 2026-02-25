@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { students } from "./students.ts";
 
-export const diary = pgTable("diary", {
+export const homeworks = pgTable("homeworks", {
   id: uuid("id").defaultRandom().primaryKey(),
   studentId: uuid("student_id")
     .notNull()

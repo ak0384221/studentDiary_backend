@@ -9,9 +9,9 @@ if (!process.env.NEON_URI) {
 }
 
 const sql = neon(process.env.NEON_URI);
-export const db = drizzle(sql);
+const db = drizzle(sql);
 
-export async function connectDB() {
+async function connectDB() {
   try {
     // Using raw SQL via sql client inside drizzle
     const result = await sql.query("SELECT NOW()"); // use sql.query(), not db``
@@ -21,3 +21,5 @@ export async function connectDB() {
     throw new Error(String(err));
   }
 }
+
+export { sql, db, connectDB };

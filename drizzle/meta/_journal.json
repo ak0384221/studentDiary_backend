@@ -15,6 +15,13 @@
       "when": 1771927997921,
       "tag": "0001_funny_cammi",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771997900919,
+      "tag": "0002_breezy_proteus",
+      "breakpoints": true
     }
   ]
 }

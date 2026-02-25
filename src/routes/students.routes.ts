@@ -1,7 +1,12 @@
 import { Router } from "express";
-import { getStudents } from "../controllers/student.controller.ts";
+import {
+  createStudent,
+  getStudents,
+} from "../controllers/student.controller.ts";
 //
-const studentRouter: Router = Router();
-studentRouter.route("/").get(getStudents);
+const studentsRouter: Router = Router();
+studentsRouter.route("/").get(getStudents);
+studentsRouter.route("/").post(createStudent);
+
 //
-export { studentRouter };
+export { studentsRouter };
