@@ -1,17 +1,43 @@
+import { and, eq } from "drizzle-orm";
 import { db } from "../config/connectDB.ts";
 import { homeworks } from "../DB/index.ts";
 import { asyncHandler } from "../utils/asyncHandler.ts";
 
 const getHomeworks = asyncHandler(async (req, res) => {
-  res.status(200).json("welsome to get homework");
+  const result = await db.select().from(homeworks);
+  res.status(200).json(result);
 });
 
 const getHomeworkById = asyncHandler(async (req, res) => {
-  res.status(200).json("welsome to getHomeworkById");
+  const { id } = req.params;
+  if (!id || id == "") {
+    throw new Error("id is required");
+  }
+  const result = await db
+    .select()
+    .from(homeworks)
+    .where(eq(homeworks.studentId, id));
+
+  res.status(200).json(result);
 });
 
 const updateHomework = asyncHandler(async (req, res) => {
-  res.status(200).json("welsome to updateHomework");
+  const { studentId, homeworkId } = req.params;
+
+  if ([studentId, homeworkId].some((key) => !key || key == "")) {
+    throw new Error("student id,homework id is required");
+  }
+
+  const result = await db
+    .update(homeworks)
+    .set({
+      status: "Succeed",
+    })
+    .where(
+      and(eq(homeworks.studentId, studentId), eq(homeworks.id, homeworkId)),
+    )
+    .returning();
+  res.status(200).json(result);
 });
 
 const createHomeworks = asyncHandler(async (req, res) => {

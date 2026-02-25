@@ -6,7 +6,7 @@ import {
 //
 const studentRouter: Router = Router();
 studentRouter.route("/:id").get(getStudentById);
-studentRouter.route("/:id").patch(updateStudent);
+studentRouter.route("/").patch(updateStudent);
 
 //
 export { studentRouter };
