@@ -1,7 +1,9 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../config/connectDB.ts";
-import { homeworks } from "../DB/index.ts";
+import { homeworks, scheduledJobs, students } from "../DB/index.ts";
 import { asyncHandler } from "../utils/asyncHandler.ts";
+import { create } from "node:domain";
+import { shapeReminder } from "../services/shapeReminder.js";
 
 const getHomeworks = asyncHandler(async (req, res) => {
   const result = await db.select().from(homeworks);
@@ -54,7 +56,8 @@ const createHomeworks = asyncHandler(async (req, res) => {
   if ([studentId, subject, description].some((key) => !key || key == "")) {
     throw new Error("student id is required");
   }
-  const created = await db
+
+  const [created] = await db
     .insert(homeworks)
     .values({
       studentId,
@@ -63,7 +66,32 @@ const createHomeworks = asyncHandler(async (req, res) => {
     })
     .returning();
 
-  res.status(200).json(created);
+  try {
+    await db.insert(scheduledJobs).values({
+      homeworkId: created!.id,
+      type: "REMINDER",
+      scheduledFor: new Date(Date.now() + 15 * 60 * 1000),
+    });
+    res.status(200).json(created);
+  } catch (error) {
+    await db.delete(homeworks).where(eq(homeworks.id, created!.id));
+    console.log(error);
+    res.status(500).json("failed to add");
+  }
+});
+
+const checkScheduleTask = asyncHandler(async (req, res) => {
+  const pending_jobs = await db
+    .select()
+    .from(scheduledJobs)
+    .leftJoin(homeworks, eq(homeworks.id, scheduledJobs.homeworkId))
+    .leftJoin(students, eq(students.id, homeworks.studentId))
+    .where(eq(scheduledJobs.status, "PENDING"));
+
+  const formatted = shapeReminder(pending_jobs);
+  const result = JSON.stringify(formatted, null, 2);
+
+  res.json(formatted);
 });
 
 export {
@@ -72,4 +100,5 @@ export {
   updateHomework,
   createHomeworks,
   getHomeworksbyStudentId,
+  checkScheduleTask,
 };
