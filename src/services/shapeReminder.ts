@@ -1,4 +1,4 @@
-function shapeReminder(rawData) {
+function shapeReminder(rawData: any) {
   const studentMap = new Map();
 
   rawData.forEach((item: any) => {

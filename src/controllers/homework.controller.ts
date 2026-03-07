@@ -2,7 +2,6 @@ import { and, eq } from "drizzle-orm";
 import { db } from "../config/connectDB.ts";
 import { homeworks, scheduledJobs, students } from "../DB/index.ts";
 import { asyncHandler } from "../utils/asyncHandler.ts";
-import { create } from "node:domain";
 import { shapeReminder } from "../services/shapeReminder.js";
 
 const getHomeworks = asyncHandler(async (req, res) => {
@@ -12,8 +11,12 @@ const getHomeworks = asyncHandler(async (req, res) => {
 
 const getHomeworkById = asyncHandler(async (req, res) => {
   const { id } = req.params;
+
   if (!id || id == "") {
     throw new Error("id is required");
+  }
+  if (typeof id != "string") {
+    throw new Error("id is must be a string type");
   }
   const result = await db.select().from(homeworks).where(eq(homeworks.id, id));
 
@@ -22,6 +25,7 @@ const getHomeworkById = asyncHandler(async (req, res) => {
 
 const updateHomework = asyncHandler(async (req, res) => {
   const { studentId, homeworkId } = req.params;
+
   const { completed } = req.query;
   const statusValue = completed ? "Completed" : "Missed";
   console.log("q", completed);
@@ -31,6 +35,9 @@ const updateHomework = asyncHandler(async (req, res) => {
     throw new Error("student id,homework id is required");
   }
 
+  if (typeof studentId != "string" || typeof homeworkId != "string") {
+    throw new Error("studentId and homeworkId must be a string type");
+  }
   const result = await db
     .update(homeworks)
     .set({
@@ -42,8 +49,12 @@ const updateHomework = asyncHandler(async (req, res) => {
     .returning();
   res.status(200).json(result);
 });
+
 const getHomeworksbyStudentId = asyncHandler(async (req, res) => {
   const { studentId } = req.params;
+  if (typeof studentId != "string") {
+    throw new Error("studentId  must be a string type");
+  }
   const result = await db
     .select()
     .from(homeworks)
