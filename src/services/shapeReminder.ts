@@ -8,6 +8,7 @@ function shapeReminder(rawData: any) {
     const date = item.scheduled_jobs.scheduledFor;
     const hwSubject = item.homeworks.subject;
     const hwDesc = item.homeworks.description;
+    const homeworkId = item.homeworks.id;
 
     if (!studentMap.has(studentId)) {
       studentMap.set(studentId, {
@@ -22,7 +23,7 @@ function shapeReminder(rawData: any) {
     const student = studentMap.get(studentId)!;
 
     // Add homework to diary
-    student.diary.push({ [hwSubject]: hwDesc });
+    student.diary.push({ hwId: homeworkId, [hwSubject]: hwDesc });
   });
 
   return Array.from(studentMap.values());

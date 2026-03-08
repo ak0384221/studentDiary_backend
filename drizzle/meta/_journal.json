@@ -36,6 +36,13 @@
       "when": 1772080840841,
       "tag": "0004_steady_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772941875999,
+      "tag": "0005_awesome_hairball",
+      "breakpoints": true
     }
   ]
 }

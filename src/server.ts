@@ -17,14 +17,14 @@ connectDB()
   .then(() => {
     app.listen(PORT, () => {
       console.log("app is running on port", PORT);
-      cron.schedule("* * * * *", async () => {
-        console.log("Runs every minute");
-        try {
-          await sendHWReport(); // <-- wait for async work
-        } catch (err) {
-          console.error("sendHWReport failed:", err);
-        }
-      });
+      // cron.schedule("* * * * *", async () => {
+      //   console.log("Runs every minute");
+      //   try {
+      //     await sendHWReport(); // <-- wait for async work
+      //   } catch (err) {
+      //     console.error("sendHWReport failed:", err);
+      //   }
+      // });
     });
   })
 
