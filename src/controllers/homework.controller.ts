@@ -24,20 +24,33 @@ const getHomeworkById = asyncHandler(async (req, res) => {
 });
 
 const updateHomework = asyncHandler(async (req, res) => {
-  const { studentId, homeworkId } = req.params;
+  let { studentId, homeworkId } = req.params;
+  const { secretCode } = req.body;
+
+  // normalize param values
+  studentId = Array.isArray(studentId) ? studentId[0] : studentId;
+  homeworkId = Array.isArray(homeworkId) ? homeworkId[0] : homeworkId;
 
   const { completed } = req.query;
-  const statusValue = completed ? "Completed" : "Missed";
-  console.log("q", completed);
-  console.log("statusvalue", statusValue);
+  const statusValue = completed === "true" ? "Completed" : "Missed";
 
-  if ([studentId, homeworkId].some((key) => !key || key == "")) {
-    throw new Error("student id,homework id is required");
+  if ([studentId, homeworkId, secretCode].some((key) => !key || key == "")) {
+    throw new Error("student id, homework id and secretCode are required");
   }
 
-  if (typeof studentId != "string" || typeof homeworkId != "string") {
-    throw new Error("studentId and homeworkId must be a string type");
+  // verify secret code matches the student
+  const studentRows = await db
+    .select()
+    .from(students)
+    .where(eq(students.id, studentId));
+  if (studentRows.length === 0) {
+    throw new Error("student not found");
   }
+  if (studentRows[0].secretCode !== secretCode) {
+    res.status(401).json({ message: "invalid secret code" });
+    return;
+  }
+
   const result = await db
     .update(homeworks)
     .set({
@@ -68,6 +81,16 @@ const createHomeworks = asyncHandler(async (req, res) => {
     throw new Error("student id is required");
   }
 
+  // Get student to check service type
+  const studentRows = await db
+    .select()
+    .from(students)
+    .where(eq(students.id, studentId));
+
+  if (studentRows.length === 0) {
+    throw new Error("student not found");
+  }
+
   const [created] = await db
     .insert(homeworks)
     .values({
@@ -78,11 +101,14 @@ const createHomeworks = asyncHandler(async (req, res) => {
     .returning();
 
   try {
-    await db.insert(scheduledJobs).values({
-      homeworkId: created!.id,
-      type: "REMINDER",
-      scheduledFor: new Date(Date.now() + 15 * 60 * 1000),
-    });
+    // Only add to scheduled jobs if service is GOLD
+    if (studentRows[0].service === "GOLD") {
+      await db.insert(scheduledJobs).values({
+        homeworkId: created!.id,
+        type: "REMINDER",
+        scheduledFor: new Date(Date.now() + 15 * 60 * 1000),
+      });
+    }
     res.status(200).json(created);
   } catch (error) {
     await db.delete(homeworks).where(eq(homeworks.id, created!.id));
@@ -105,6 +131,45 @@ const checkScheduleTask = asyncHandler(async (req, res) => {
   res.json(formatted);
 });
 
+const updateHomeworkDescription = asyncHandler(async (req, res) => {
+  let { id } = req.params;
+  const { description, secretCode } = req.body;
+
+  // normalize id
+  id = Array.isArray(id) ? id[0] : id;
+
+  if (!id || !description || !secretCode) {
+    throw new Error("id, description and secretCode are required");
+  }
+
+  // find homework to get studentId
+  const hwRows = await db.select().from(homeworks).where(eq(homeworks.id, id));
+  if (hwRows.length === 0) {
+    throw new Error("homework not found");
+  }
+  const studentId = hwRows[0].studentId;
+
+  const studentRows = await db
+    .select()
+    .from(students)
+    .where(eq(students.id, studentId));
+  if (studentRows.length === 0) {
+    throw new Error("student not found");
+  }
+  if (studentRows[0].secretCode !== secretCode) {
+    res.status(401).json({ message: "invalid secret code" });
+    return;
+  }
+
+  const result = await db
+    .update(homeworks)
+    .set({ description })
+    .where(eq(homeworks.id, id))
+    .returning();
+
+  res.status(200).json(result);
+});
+
 export {
   getHomeworks,
   getHomeworkById,
@@ -112,4 +177,5 @@ export {
   createHomeworks,
   getHomeworksbyStudentId,
   checkScheduleTask,
+  updateHomeworkDescription,
 };

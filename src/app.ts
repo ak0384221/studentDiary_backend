@@ -1,5 +1,7 @@
 import e from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+
 import { homeworkRouter } from "./routes/homework.routes.ts";
 import { studentRouter } from "./routes/student.routes.ts";
 import { studentsRouter } from "./routes/students.routes.ts";
@@ -11,11 +13,11 @@ dotenv.config({ path: "./.env" });
 const app: e.Application = e();
 app.use(e.json());
 app.use(e.urlencoded({ extended: true }));
+app.use(cors());
 //
 app.use("/api/v1/students", studentsRouter);
 app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/homeworks", homeworksRouter);
-app.use("/api/v1/homework", homeworkRouter);
 app.use("/api/v1/homework", homeworkRouter);
 app.get("/api/v1/notify", sendHWReport);
 

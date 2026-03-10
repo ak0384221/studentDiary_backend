@@ -19,12 +19,11 @@ async function sendWhatsappMessage(to: string, message: any) {
 
       console.log(res);
     }
-    // const msg = await client.messages.create({
-    //   body: message,
-    //   from: process.env.TWILIO_WHATSAPP_NUMBER,
-    //   to: `whatsapp:+88${to}`, // e.g. whatsapp:+8801XXXXXXXXX
-    // });
-    // console.log("Message sent:", msg.sid);
+    const msg = await client.messages.create({
+      body: JSON.stringify(message, null, 2),
+      from: process.env.TWILIO_WHATSAPP_NUMBER,
+      to: `whatsapp:+88${to}`, // e.g. whatsapp:+8801XXXXXXXXX
+    });
 
     for (const hw of message.diary) {
       const res = await db
@@ -35,6 +34,7 @@ async function sendWhatsappMessage(to: string, message: any) {
 
       console.log(res);
     }
+    console.error("sent msg", msg);
   } catch (err) {
     for (const hw of message.diary) {
       const res = await db
