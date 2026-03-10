@@ -18,7 +18,7 @@ async function sendHWReport() {
       ),
     );
 
-  if (pending_jobs.length < 1) {
+  if (pending_jobs.length == 0) {
     throw new Error("no pending jobs");
   }
 
@@ -29,7 +29,6 @@ async function sendHWReport() {
       await sendWhatsappMessage(reminder.phone, reminder);
     }
 
-    console.log("succesfully sent the messages to whstapp");
     return;
   } catch (error) {
     if (error instanceof Error) {

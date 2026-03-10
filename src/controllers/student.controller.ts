@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../config/connectDB.ts";
-import { students } from "../DB/index.ts";
+import { students, scheduledJobs, homeworks } from "../DB/index.ts";
 import { asyncHandler } from "../utils/asyncHandler.ts";
 
 const getStudents = asyncHandler(async (req, res) => {
@@ -107,4 +107,87 @@ const updateStudent = asyncHandler(async (req, res) => {
   res.status(200).json(result);
 });
 
-export { getStudents, getStudentById, createStudent, updateStudent };
+const getScheduledJobs = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+  if (!studentId) {
+    throw new Error("studentId is required");
+  }
+
+  const sid = Array.isArray(studentId) ? studentId[0] : studentId;
+
+  // Get all scheduled jobs for a student's homeworks
+  const jobs = await db
+    .select()
+    .from(scheduledJobs)
+    .leftJoin(homeworks, eq(homeworks.id, scheduledJobs.homeworkId))
+    .where(eq(homeworks.studentId, sid));
+
+  // Extract just the scheduled job data
+  const jobData = jobs.map((job) => job.scheduled_jobs);
+  res.status(200).json(jobData);
+});
+
+const getAnalytics = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+  const { from, to } = req.query;
+
+  if (!studentId || !from || !to) {
+    throw new Error("studentId, from, and to dates are required");
+  }
+
+  const sid = Array.isArray(studentId) ? studentId[0] : (studentId as string);
+  const fromStr = Array.isArray(from) ? (from[0] as string) : (from as string);
+  const toStr = Array.isArray(to) ? (to[0] as string) : (to as string);
+
+  // Parse dates
+  const fromDateTime = new Date(fromStr);
+  const toDateTime = new Date(toStr);
+  toDateTime.setHours(23, 59, 59, 999); // Include entire day
+
+  // Get homeworks for this student within date range
+  const allHomeworks = await db
+    .select()
+    .from(homeworks)
+    .where(eq(homeworks.studentId, sid));
+
+  // Filter by date range
+  const filteredHomeworks = allHomeworks.filter((hw) => {
+    const createdDate = hw.createdAt ? new Date(hw.createdAt) : null;
+    if (!createdDate) return false;
+    return createdDate >= fromDateTime && createdDate <= toDateTime;
+  });
+
+  // Group by status
+  const completed = filteredHomeworks.filter((h) => h.status === "Completed");
+  const missed = filteredHomeworks.filter((h) => h.status === "Missed");
+  const pending = filteredHomeworks.filter((h) => h.status === "Pending");
+
+  const analyticsData = {
+    studentId: sid,
+    period: "custom",
+    dateRange: {
+      from: fromStr,
+      to: toStr,
+    },
+    summary: {
+      total: filteredHomeworks.length,
+      completed: completed.length,
+      missed: missed.length,
+      pending: pending.length,
+    },
+    completed,
+    missed,
+    pending,
+  };
+
+  res.status(200).json(analyticsData);
+});
+
+export {
+  getStudents,
+  getStudentById,
+  createStudent,
+  updateStudent,
+  getScheduledJobs,
+  getAnalytics,
+};
