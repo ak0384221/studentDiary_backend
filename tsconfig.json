@@ -13,6 +13,7 @@
 {
   "compilerOptions": {
     "noEmit": false,
+    "skipLibCheck": true,
     "target": "esnext",
     "module": "nodenext",
     "rewriteRelativeImportExtensions": true,
@@ -23,11 +24,7 @@
     "strictNullChecks": true,
     "noImplicitAny": true,
     "sourceMap": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true
+    "strict": true
   },
   "include": ["src/**/*"]
 }
