@@ -12,7 +12,7 @@
 
 {
   "compilerOptions": {
-    "noEmit": true,
+    "noEmit": false,
     "target": "esnext",
     "module": "nodenext",
     "rewriteRelativeImportExtensions": true,
