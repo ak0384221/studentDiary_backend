@@ -137,7 +137,6 @@ npm run dev
 ## 📈 Future Improvements
 
 - 🔐 Authentication & RBAC system
-- 📊 Analytics dashboard
 - 🏫 Multi-tenant (multi-school support)
 - 📱 Mobile optimization
 
