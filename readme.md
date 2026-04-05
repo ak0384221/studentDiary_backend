@@ -172,8 +172,8 @@ This project is licensed under the MIT License.
 
 **Belal Hossain**
 
-- GitHub: https://github.com/yourusername
-- LinkedIn: https://linkedin.com/in/yourprofile
+- GitHub: https://github.com/ak0384221
+- LinkedIn: https://linkedin.com/in/md-bellal-hossain-50a027373
 
 ---
 
