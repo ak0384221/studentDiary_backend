@@ -1,17 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
 import { app } from "./app.ts";
-import cron from "node-cron";
 import { connectDB } from "./config/connectDB.ts";
-import { sendHWReport } from "./services/sendHomeworksCron.ts";
 const PORT = process.env.PORT || 5000;
 
-const required = [
-  "NEON_URI",
-  "TWILIO_ACCOUNT_SID",
-  "TWILIO_AUTH_TOKEN",
-  "TWILIO_WHATSAPP_NUMBER",
-];
+const required = ["NEON_URI"];
 for (let key of required) {
   console.log({ [key]: process.env[key] });
   if (!process.env[key]) {
@@ -22,16 +15,6 @@ connectDB()
   .then(() => {
     app.listen(PORT, () => {
       console.log("app is running on port", PORT);
-
-      cron.schedule("0 17 * * *", async () => {
-        console.log("Runs every minute");
-        try {
-          // await sendHWReport(); // <-- wait for async work
-          console.log("crone job");
-        } catch (err) {
-          console.error("sendHWReport failed:", err);
-        }
-      });
     });
   })
 

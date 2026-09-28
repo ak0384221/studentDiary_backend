@@ -18,8 +18,6 @@
 
 - 📚 Student & Homework Management
 - 🧾 Relational database design (PostgreSQL)
-- 🔔 Automated notifications (mail + reports)
-- ⏱️ Cron-based scheduling system
 - 🧠 Scalable MVC backend architecture
 - 🔐 Authentication & RBAC (planned)
 - 🎨 Responsive UI with modern frontend stack
@@ -28,13 +26,12 @@
 
 ## 🛠️ Tech Stack
 
-| Layer      | Technology                     |
-| ---------- | ------------------------------ |
-| Backend    | Node.js, Express, TypeScript   |
-| Database   | PostgreSQL (Neon), Drizzle ORM |
-| Frontend   | React / Next.js, Tailwind CSS  |
-| Automation | node-cron                      |
-| Tools      | Git, Postman, Vercel, Render   |
+| Layer    | Technology                     |
+| -------- | ------------------------------ |
+| Backend  | Node.js, Express, TypeScript   |
+| Database | PostgreSQL (Neon), Drizzle ORM |
+| Frontend | React / Next.js, Tailwind CSS  |
+| Tools    | Git, Postman, Vercel, Render   |
 
 ---
 
@@ -95,14 +92,13 @@ npm run dev
 
 ### Students
 
-| Method | Endpoint                                  | Description           |
-| ------ | ----------------------------------------- | --------------------- |
-| GET    | /api/v1/students                          | Fetch all students    |
-| POST   | /api/v1/students                          | Create a new student  |
-| GET    | /api/v1/student/:id                       | Get student by ID     |
-| PATCH  | /api/v1/student                           | Update student        |
-| GET    | /api/v1/student/:studentId/scheduled-jobs | Get scheduled jobs    |
-| GET    | /api/v1/student/:studentId/analytics      | Get student analytics |
+| Method | Endpoint                             | Description           |
+| ------ | ------------------------------------ | --------------------- |
+| GET    | /api/v1/students                     | Fetch all students    |
+| POST   | /api/v1/students                     | Create a new student  |
+| GET    | /api/v1/student/:id                  | Get student by ID     |
+| PATCH  | /api/v1/student                      | Update student        |
+| GET    | /api/v1/student/:studentId/analytics | Get student analytics |
 
 ### Homeworks
 
@@ -124,17 +120,7 @@ npm run dev
 
 ---
 
-## 🔄 Automation System
-
-- Runs scheduled background jobs using cron( planned to transform into Queue)
-- Handles:
-  - 📩 Weekly reports
-  - 📲 email notifications
-- Designed for async and scalable execution
-
----
-
-## 📈 Future Improvements
+## Future Improvements
 
 - 🔐 Authentication & RBAC system
 - 🏫 Multi-tenant (multi-school support)

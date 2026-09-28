@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../config/connectDB.ts";
-import { students, scheduledJobs, homeworks } from "../DB/index.ts";
+import { students, homeworks } from "../DB/index.ts";
 import { asyncHandler } from "../utils/asyncHandler.ts";
 
 const getStudents = asyncHandler(async (req, res) => {
@@ -107,26 +107,6 @@ const updateStudent = asyncHandler(async (req, res) => {
   res.status(200).json(result);
 });
 
-const getScheduledJobs = asyncHandler(async (req, res) => {
-  const { studentId } = req.params;
-  if (!studentId) {
-    throw new Error("studentId is required");
-  }
-
-  const sid = Array.isArray(studentId) ? studentId[0] : studentId;
-
-  // Get all scheduled jobs for a student's homeworks
-  const jobs = await db
-    .select()
-    .from(scheduledJobs)
-    .leftJoin(homeworks, eq(homeworks.id, scheduledJobs.homeworkId))
-    .where(eq(homeworks.studentId, sid));
-
-  // Extract just the scheduled job data
-  const jobData = jobs.map((job) => job.scheduled_jobs);
-  res.status(200).json(jobData);
-});
-
 const getAnalytics = asyncHandler(async (req, res) => {
   const { studentId } = req.params;
   const { from, to } = req.query;
@@ -188,6 +168,5 @@ export {
   getStudentById,
   createStudent,
   updateStudent,
-  getScheduledJobs,
   getAnalytics,
 };

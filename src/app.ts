@@ -6,8 +6,6 @@ import { homeworkRouter } from "./routes/homework.routes.ts";
 import { studentRouter } from "./routes/student.routes.ts";
 import { studentsRouter } from "./routes/students.routes.ts";
 import { homeworksRouter } from "./routes/homeworks.routes.ts";
-import { checkScheduleTask } from "./controllers/homework.controller.ts";
-import { sendHWReport } from "./services/sendHomeworksCron.ts";
 //
 const allowedOrigins = [
   process.env.FRONTEND_URI, // Will be localhost in local .env or Vercel URL in Railway
@@ -36,6 +34,5 @@ app.use("/api/v1/students", studentsRouter);
 app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/homeworks", homeworksRouter);
 app.use("/api/v1/homework", homeworkRouter);
-app.get("/api/v1/notify", sendHWReport);
 
 export { app };

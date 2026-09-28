@@ -1,8 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../config/connectDB.ts";
-import { homeworks, scheduledJobs, students } from "../DB/index.ts";
+import { homeworks, students } from "../DB/index.ts";
 import { asyncHandler } from "../utils/asyncHandler.ts";
-import { shapeReminder } from "../services/shapeReminder.js";
 
 const getHomeworks = asyncHandler(async (req, res) => {
   const result = await db.select().from(homeworks);
@@ -101,34 +100,12 @@ const createHomeworks = asyncHandler(async (req, res) => {
     .returning();
 
   try {
-    // Only add to scheduled jobs if service is GOLD
-    if (studentRows[0].service === "GOLD") {
-      await db.insert(scheduledJobs).values({
-        homeworkId: created!.id,
-        type: "REMINDER",
-        scheduledFor: new Date(Date.now() + 15 * 60 * 1000),
-      });
-    }
     res.status(200).json(created);
   } catch (error) {
     await db.delete(homeworks).where(eq(homeworks.id, created!.id));
     console.log(error);
     res.status(500).json("failed to add");
   }
-});
-
-const checkScheduleTask = asyncHandler(async (req, res) => {
-  const pending_jobs = await db
-    .select()
-    .from(scheduledJobs)
-    .leftJoin(homeworks, eq(homeworks.id, scheduledJobs.homeworkId))
-    .leftJoin(students, eq(students.id, homeworks.studentId))
-    .where(eq(scheduledJobs.status, "PENDING"));
-
-  const formatted = shapeReminder(pending_jobs);
-  const result = JSON.stringify(formatted, null, 2);
-
-  res.json(formatted);
 });
 
 const updateHomeworkDescription = asyncHandler(async (req, res) => {
@@ -176,6 +153,5 @@ export {
   updateHomework,
   createHomeworks,
   getHomeworksbyStudentId,
-  checkScheduleTask,
   updateHomeworkDescription,
 };
