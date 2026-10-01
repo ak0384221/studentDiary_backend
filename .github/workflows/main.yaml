@@ -39,10 +39,17 @@ jobs:
             pnpm-lock.yaml
           retention-days: 1
 
-  # docker-build-push:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name:
+  docker-build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get-code
+        uses: actions/checkout@v4
+
+      - name: download artfact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .
 
   # deploy-to-render:
   #   runs-on: ubuntu-latest
