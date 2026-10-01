@@ -8,7 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx src/server.ts",
     "setup": "tsx src/DB/setupTables.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",

@@ -1,0 +1,40 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  verify-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get-code
+        uses: actions/checkout@v4
+
+      - name: setup pnpm
+        uses: pnpm/actions-setup@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: install dep
+        run: pnpm install --frozen-lockfile
+
+      - name: type check
+        run: pnpm run typecheck
+
+      - name: build
+        run: pnpm run build
+
+  # docker-build-push:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name:
+
+  # deploy-to-render:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name:
