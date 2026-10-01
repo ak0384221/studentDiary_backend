@@ -29,6 +29,16 @@ jobs:
       - name: build
         run: pnpm run build
 
+      - name: upload-build-artfact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            dist
+            package.json
+            pnpm-lock.yaml
+          retention-days: 1
+
   # docker-build-push:
   #   runs-on: ubuntu-latest
   #   steps:
